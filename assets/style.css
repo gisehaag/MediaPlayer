@@ -46,7 +46,7 @@ body {
 }
 
 .playing .controls {
-	bottom: -10%;
+	bottom: -20%;
 }
 
 .player:hover .controls {
