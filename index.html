@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./assets/reset.css" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" />
+		<link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="./assets/style.css" />
+		<title>Practica MediaPlayer Js</title>
+	</head>
+	<body>
+		<div class="text-box">
+			<h1 class="text">Practicando JavaScript! - MediaPlayer</h1>
+			<p class="text">
+				Utilizando JavaScript, cree una clase para manipular diversos elemnentos del DOM de tal manera que se
+				conviertan en los controles de un reproductor de videos. Luego con CSS hice todo más bello.
+			</p>
+		</div>
+
+		<!-- utilizando el atribiuto controls aparecen los controles del video y usando autoplay se reproduce automáticamente -->
+		<div class="box">
+			<div class="player" id="video-1">
+				<video class="video" src="./assets/video-a-mostrar.mp4"></video>
+				<div class="controls">
+					<button class="player__button toggle control"><i class="fas fa-play"></i></button>
+
+					<div class="volume-wrapper control">
+						<button class="player__button volume">
+							<i class="fas fa-volume-down" id="volume-icon"></i>
+						</button>
+						<input type="range" name="volume-control" id="volume-range" min="0" max="100" value="30" step="10" />
+					</div>
+
+					<div class="control">
+						<button class="backward__button player__control"><i class="fas fa-backward"></i></button>
+						<button class="forward__button player__control"><i class="fas fa-forward"></i></button>
+					</div>
+
+					<input class="control" type="range" name="progress-control" id="progress-control" min="0" value="0" />
+
+					<div class="play-progress control">
+						<span class="progress" id="progress"></span>
+						<span class="duration" id="duration"></span>
+					</div>
+				</div>
+			</div>
+
+			<div class="player" id="video-2"></div>
+		</div>
+
+		<footer class="footer">
+			<div class="footer-content">
+				<p>
+					<i><img width="12px" src="https://s.w.org/images/core/emoji/13.0.1/svg/270f.svg" alt="✏" /></i>
+					Developed with
+					<i><img width="12px" src="https://s.w.org/images/core/emoji/13.0.1/svg/2764.svg" alt="❤" /></i>
+					by
+					<a href="https://gisehaag.com" target="_blank">GisehaaG</a>
+					<i><img width="12px" src="https://s.w.org/images/core/emoji/13.0.1/svg/2b50.svg" alt="⭐" /></i>
+					|
+					<i> 2021 </i>
+				</p>
+			</div>
+		</footer>
+		<script src="./assets/script.js"></script>
+	</body>
+</html>
