@@ -1,81 +1,71 @@
 class MediaPlayer {
 	constructor(id) {
-
 		this.videoWrapper = document.querySelector(id);
 
 		this.URL = this.videoWrapper.dataset.videoUrl;
-		this.volumeInitValue = this.videoWrapper.dataset.initVolume;
-		this.GAP = this.videoWrapper.dataset.gap;
-
-		this.INIT_VOLUME = this.volumeInitValue / 100;
+		this.INIT_VOLUME = this.videoWrapper.dataset.initVolume;
+		this.PROGRESS_GAP = this.videoWrapper.dataset.progressGap;
 
 		this.videoWrapper.innerHTML = `
 			<video class="video" src="${this.URL}" autoplay></video>
 			<div class="controls">
-				<button class="player__button toggle control"><i class="fas fa-play"></i></button>
+				<button class="controls__play control"><i class="fas fa-play"></i></button>
 
 				<div class="volume-wrapper control">
-					<button class="player__button volume">
+					<button class="controls__volume">
 						<i class="fas fa-volume-down" id="volume-icon"></i>
 					</button>
-					<input type="range" name="volume-control" id="volume-range" min="0" max="100" value="${this.volumeInitValue}" step="10" />
+					<input class="controls__volume-bar" type="range" name="volume-control" id="volume-bar" min="0" max="100"
+					value="${this.INIT_VOLUME}" step="10"/>
 				</div>
 
 				<div class="control">
-					<button class="backward__button player__control"><i class="fas fa-backward"></i></button>
-					<button class="forward__button player__control"><i class="fas fa-forward"></i></button>
+					<button class="controls__backward position-button"><i class="fas fa-backward"></i></button>
+					<button class="controls__forward position-button"><i class="fas fa-forward"></i></button>
 				</div>
 
-				<input class="control" type="range" name="progress-control" id="progress-control" min="0" value="0" step="${this.GAP}"/>
+				<input class="control controls__progress-bar" type="range" min="0" value="0"/>
 
-				<div class="play-progress control">
-					<span class="progress" id="progress"></span>
-					<span class="duration" id="duration"></span>
+				<div class="control play-progress">
+					<span class="progress"></span>
+					<span class="duration"></span>
 				</div>
 
 			</div>`;
 
-
 		this.video = this.videoWrapper.querySelector('video');
 		this.controls = this.videoWrapper.querySelector('.controls');
 
-
-		this.video.volume = this.INIT_VOLUME;
+		this.video.volume = this.INIT_VOLUME / 100;
 		this.preVolume = this.video.volume;
 
-		this.playPauseButton = this.controls.querySelector('.toggle');
-		this.volumeIcon = this.controls.querySelector('.volume');
-		this.volumeInput = this.controls.querySelector('#volume-range');
-		this.playerControl = this.controls.querySelectorAll('.player__control');
-		this.backwardButton = this.controls.querySelector('.backward__button');
-		this.forwardButton = this.controls.querySelector('.forward__button');
-		this.progressRange = this.controls.querySelector('#progress-control');
-		this.displayVideoDuration = this.controls.querySelector('#duration');
-		this.displayProgress = this.controls.querySelector('#progress');
-
+		this.playPauseButton = this.controls.querySelector('.controls__play');
+		this.volumeIcon = this.controls.querySelector('.controls__volume');
+		this.volumeInput = this.controls.querySelector('.controls__volume-bar');
+		this.backwardForwardButtons = this.controls.querySelectorAll('.position-button');
+		this.backwardButton = this.controls.querySelector('.controls__backward');
+		this.forwardButton = this.controls.querySelector('.controls__forward');
+		this.progressRange = this.controls.querySelector('.controls__progress-bar');
+		this.displayVideoDuration = this.controls.querySelector('.duration');
+		this.displayProgress = this.controls.querySelector('.progress');
 
 		this.addEvents();
-		// this.videoPlayer();
-
-
 	}
 
 	addEvents() {
-		// Acá a los metodos los paso con bind porque intersa que el this sea la clase MediaPlayer y no quien los llamó.
 		this.playPauseButton.addEventListener('click', this.togglePlayPauseButton.bind(this));
-
 
 		this.volumeIcon.addEventListener('click', this.muteVideo.bind(this));
 		this.volumeInput.addEventListener('input', this.volumeController.bind(this));
 
-		this.video.addEventListener('loadeddata', this.videoPlayer.bind(this));
+		this.video.addEventListener('loadeddata', this.updateProgressBar.bind(this));
+		this.video.addEventListener('timeupdate', this.updateProgressBar.bind(this));
 
 		this.progressRange.addEventListener('input', this.setCurrentTime.bind(this));
 
-		this.playerControl.forEach((button) => {
-			button.addEventListener('click', this.playerController.bind(this));
+		this.backwardForwardButtons.forEach((button) => {
+			button.addEventListener('click', this.backwardForwardHandler.bind(this));
 		});
-
 	}
 
 	transformToMinutesAndSeconds(time) {
@@ -88,14 +78,15 @@ class MediaPlayer {
 		return `${timeInMinutes}:${timeSeconds}`;
 	}
 
-	playerController(e) {
+	backwardForwardHandler(e) {
+		let gap = parseInt(this.PROGRESS_GAP);
 		let buttonPressed = e.currentTarget;
 		let buttonPressedClasses = buttonPressed.classList.value;
 
 		if (buttonPressedClasses.includes('backward')) {
-			this.video.currentTime -= this.GAP;
+			this.video.currentTime -= gap;
 		} else if (buttonPressedClasses.includes('forward')) {
-			this.video.currentTime += this.GAP;
+			this.video.currentTime += gap;
 		}
 	}
 
@@ -158,7 +149,7 @@ class MediaPlayer {
 		this.iconClass.toggle('fa-volume-mute');
 	}
 
-	videoPlayer() {
+	updateProgressBar() {
 		let maxRange = this.video.duration;
 
 		this.progressRange.setAttribute('max', maxRange);
@@ -173,7 +164,6 @@ class MediaPlayer {
 
 		console.log(this.progressRange.value, this.volumeInitValue, this.GAP);
 	}
-
 }
 
 let player = new MediaPlayer('#video-1');

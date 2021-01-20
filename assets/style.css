@@ -72,18 +72,18 @@ i {
 	padding: 0 2px;
 }
 
-.volume-wrapper:hover #volume-range {
+.volume-wrapper:hover .controls__volume-bar {
 	max-width: 50px;
 }
 
-#volume-range {
+.controls__volume-bar {
 	max-width: 0;
 	height: 10px;
 	overflow: hidden;
 	transition: all 0.4s ease;
 }
 
-#progress-control {
+.controls__progress-bar {
 	flex-grow: 1;
 }
 
