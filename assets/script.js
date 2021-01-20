@@ -21,7 +21,7 @@ class MediaPlayer {
 	displayTemplate() {
 		const URL = this.videoWrapper.dataset.videoUrl;
 		this.videoWrapper.innerHTML = `
-			<video class="video" src="${URL}" autoplay></video>
+			<video class="video" src="${URL}"></video>
 			<div class="controls">
 				<button class="controls__play control tooltip" data-title="play"><i class="fas fa-play"></i></button>
 
@@ -79,6 +79,7 @@ class MediaPlayer {
 		this.backwardForwardButtons.forEach((button) => {
 			button.addEventListener('click', this.backwardForwardHandler.bind(this));
 		});
+
 	}
 
 	transformToMinutesAndSeconds(time) {
