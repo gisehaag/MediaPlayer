@@ -1,43 +1,85 @@
 class MediaPlayer {
-	constructor(id) {
+	constructor(config) {
+		const configDefaults = {
+			target: '.video-1',
+			volume: 30,
+			volumeGap: 10,
+			progressGap: 5,
+		}
 
-		this.videoWrapper = document.querySelector(id);
+		this.config = Object.assign(configDefaults, config);
+		this.videoWrapper = document.querySelector(this.config.target);
 
+		// Bail if no main element
+		if (!this.videoWrapper) return;
+
+		this.displayTemplate();
+		this.assignElements();
+		this.addEvents();
+	}
+
+	displayTemplate() {
+		const URL = this.videoWrapper.dataset.videoUrl;
+		this.videoWrapper.innerHTML = `
+			<video class="video" src="${URL}"></video>
+			<div class="controls">
+				<button class="controls__play control tooltip" data-title="play"><i class="fas fa-play"></i></button>
+
+				<div class="volume-wrapper control">
+					<button class="controls__volume tooltip" data-title="mute">
+						<i class="fas fa-volume-down" id="volume-icon"></i>
+					</button>
+					<input class="controls__volume-bar" type="range" name="volume-control" id="volume-bar" min="0" max="100"
+					value="${this.config.volume}" step="${this.config.volumeGap}"/>
+				</div>
+
+				<div class="control">
+					<button class="controls__backward position-button tooltip" data-title="<< ${this.config.progressGap}s"><i class="fas fa-backward"></i></button>
+					<button class="controls__forward position-button tooltip" data-title="${this.config.progressGap}s >>"><i class="fas fa-forward"></i></button>
+				</div>
+
+				<input class="control controls__progress-bar" type="range" min="0" value="0"/>
+
+				<div class="control play-progress">
+					<span class="progress"></span>
+					<span class="duration"></span>
+				</div>
+			</div>`;
+	}
+
+	assignElements() {
 		this.video = this.videoWrapper.querySelector('video');
 		this.controls = this.videoWrapper.querySelector('.controls');
 
-		this.playPauseButton = this.controls.querySelector('.toggle');
-		this.volumeIcon = this.controls.querySelector('.volume');
-		this.volumeInput = this.controls.querySelector('#volume-range');
-		this.backwardButton = this.controls.querySelector('.backward__button');
-		this.progressRange = this.controls.querySelector('#progress-control');
-		this.forwardButton = this.controls.querySelector('.forward__button');
-		this.playerControl = this.controls.querySelectorAll('.player__control');
-		this.displayVideoDuration = this.controls.querySelector('#duration');
-		this.displayProgress = this.controls.querySelector('#progress');
-
-		this.INIT_VOLUME = 0.3;
-		this.video.volume = this.INIT_VOLUME;
+		this.video.volume = this.config.volume / 100;
 		this.preVolume = this.video.volume;
 
-		this.addEvents();
-		this.videoPlayer();
-
+		this.playPauseButton = this.controls.querySelector('.controls__play');
+		this.volumeIcon = this.controls.querySelector('.controls__volume');
+		this.volumeInput = this.controls.querySelector('.controls__volume-bar');
+		this.backwardForwardButtons = this.controls.querySelectorAll('.position-button');
+		this.backwardButton = this.controls.querySelector('.controls__backward');
+		this.forwardButton = this.controls.querySelector('.controls__forward');
+		this.progressRange = this.controls.querySelector('.controls__progress-bar');
+		this.displayVideoDuration = this.controls.querySelector('.duration');
+		this.displayProgress = this.controls.querySelector('.progress');
 	}
 
 	addEvents() {
-		// Acá a los metodos los paso con bind porque intersa que el this sea la clase MediaPlayer y no quien los llamó.
 		this.playPauseButton.addEventListener('click', this.togglePlayPauseButton.bind(this));
 
 		this.volumeIcon.addEventListener('click', this.muteVideo.bind(this));
 		this.volumeInput.addEventListener('input', this.volumeController.bind(this));
 
-		this.video.addEventListener('timeupdate', this.videoPlayer.bind(this));
+		this.video.addEventListener('loadeddata', this.updateProgressBar.bind(this));
+		this.video.addEventListener('timeupdate', this.updateProgressBar.bind(this));
+
 		this.progressRange.addEventListener('input', this.setCurrentTime.bind(this));
 
-		this.playerControl.forEach((button) => {
-			button.addEventListener('click', this.playerController.bind(this));
+		this.backwardForwardButtons.forEach((button) => {
+			button.addEventListener('click', this.backwardForwardHandler.bind(this));
 		});
+
 	}
 
 	transformToMinutesAndSeconds(time) {
@@ -50,29 +92,32 @@ class MediaPlayer {
 		return `${timeInMinutes}:${timeSeconds}`;
 	}
 
-	playerController(e) {
+	backwardForwardHandler(e) {
+		let gap = parseInt(this.config.progressGap);
 		let buttonPressed = e.currentTarget;
 		let buttonPressedClasses = buttonPressed.classList.value;
-		let GAP = 30;
 
 		if (buttonPressedClasses.includes('backward')) {
-			this.video.currentTime -= GAP;
+			this.video.currentTime -= gap;
 		} else if (buttonPressedClasses.includes('forward')) {
-			this.video.currentTime += GAP;
+			this.video.currentTime += gap;
 		}
 	}
 
 	togglePlayPauseButton() {
 		this.iconClass = this.playPauseButton.querySelector('i').classList;
 
+
 		if (this.iconClass.contains('fa-play')) {
 			this.iconClass.replace('fa-play', 'fa-pause');
 			this.video.play();
 			this.videoWrapper.classList.add('playing');
+			this.playPauseButton.setAttribute('data-title', 'pause');
 		} else {
 			this.iconClass.replace('fa-pause', 'fa-play');
 			this.video.pause();
 			this.videoWrapper.classList.remove('playing');
+			this.playPauseButton.setAttribute('data-title', 'play');
 		}
 	}
 
@@ -106,9 +151,11 @@ class MediaPlayer {
 			this.preVolume = this.video.volume;
 			this.video.volume = 0;
 			this.volumeInput.value = 0;
+			this.volumeIcon.setAttribute('data-title', 'unmute');
 		} else {
 			this.video.volume = this.preVolume;
 			this.volumeInput.value = this.preVolume * 100;
+			this.volumeIcon.setAttribute('data-title', 'mute');
 		}
 
 		this.video.muted = !this.video.muted;
@@ -116,27 +163,26 @@ class MediaPlayer {
 		this.changeVolumeIcon();
 	}
 
-	changeToMuteButton() {
-		this.iconClass = volumeIcon.querySelector('i').classList;
-		this.iconClass.toggle('fa-volume-mute');
-	}
+	updateProgressBar() {
+		let maxRange = Math.round(this.video.duration);
 
-	videoPlayer() {
-		let maxRange = this.video.duration;
 		this.progressRange.setAttribute('max', maxRange);
 		this.progressRange.value = this.video.currentTime;
-		this.displayProgress.innerHTML = `${(this.transformToMinutesAndSeconds(this.video.currentTime))} / `;
-		this.displayVideoDuration.innerHTML = (this.transformToMinutesAndSeconds(this.video.duration));
+		this.displayProgress.innerHTML = this.transformToMinutesAndSeconds(this.video.currentTime);
+		this.displayVideoDuration.innerHTML = `/ ${(this.transformToMinutesAndSeconds(this.video.duration))}`;
 	}
 
 	setCurrentTime() {
 		let settedCurrentTime = this.progressRange.value;
 		this.video.currentTime = settedCurrentTime;
 	}
-
 }
 
-let player = new MediaPlayer('#video-1');
+let player = new MediaPlayer({
+	target: '#video-1',
+	volume: 20,
+	progressGap: 1,
+});
 
 
 

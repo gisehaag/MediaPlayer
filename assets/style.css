@@ -46,7 +46,7 @@ body {
 }
 
 .playing .controls {
-	bottom: -10%;
+	bottom: -20%;
 }
 
 .player:hover .controls {
@@ -58,7 +58,28 @@ body {
 	margin-right: 10px;
 }
 
-button {
+.tooltip {
+	position: relative;
+}
+
+.tooltip:hover::before {
+	position: absolute;
+	top: -15px;
+	left: 0px;
+	transform: translateX(-15%);
+	content: attr(data-title);
+	background-color: #f9f9f9;
+	padding: 4px;
+	border: 0.5px solid black;
+	border-radius: 5px;
+	font-size: 10px;
+	font-family: 'Montserrat';
+	color: gray;
+	z-index: 5;
+	white-space: nowrap;
+}
+
+.player button {
 	background-color: rgba(255, 255, 255, 0.5);
 	height: 25px;
 	width: 25px;
@@ -67,36 +88,36 @@ button {
 	box-sizing: border-box;
 }
 
-i {
+.player i {
 	color: #444;
 	padding: 0 2px;
 }
 
-.volume-wrapper:hover #volume-range {
+.volume-wrapper:hover .controls__volume-bar {
 	max-width: 50px;
 }
 
-#volume-range {
+.controls__volume-bar {
 	max-width: 0;
 	height: 10px;
 	overflow: hidden;
 	transition: all 0.4s ease;
 }
 
-#progress-control {
+.control.controls__progress-bar {
 	flex-grow: 1;
 }
 
-input[type='range'] {
+.player input[type='range'] {
 	background-color: transparent;
 	-webkit-appearance: none;
 }
 
-input[type='range']:focus {
+.player input[type='range']:focus {
 	outline: none;
 }
 
-input[type='range']::-webkit-slider-runnable-track {
+.player input[type='range']::-webkit-slider-runnable-track {
 	background: #f0f0f0;
 	border: 0.2px solid #010101;
 	border-radius: 1.3px;
@@ -105,7 +126,7 @@ input[type='range']::-webkit-slider-runnable-track {
 	cursor: pointer;
 }
 
-input[type='range']::-webkit-slider-thumb {
+.player input[type='range']::-webkit-slider-thumb {
 	margin-top: -2.85px;
 	width: 8px;
 	height: 8px;
@@ -148,4 +169,38 @@ input[type='range']::-webkit-slider-thumb {
 .footer-content i {
 	padding: 0 5px;
 	font-style: normal;
+}
+
+@media screen and (max-width: 768px) {
+	.box,
+	.text-box {
+		width: 100vw;
+		font-size: 0.75em;
+	}
+
+	.player {
+		width: 95%;
+		margin: 0 auto;
+	}
+
+	.controls {
+		width: 100%;
+		max-width: 90%;
+		margin-left: 2.5%;
+		transition: none;
+	}
+
+	.control {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.volume-wrapper:hover .controls__volume-bar {
+		width: 15vw;
+	}
+
+	.control.controls__progress-bar {
+		width: 25%;
+	}
 }
