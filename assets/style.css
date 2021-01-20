@@ -58,6 +58,27 @@ body {
 	margin-right: 10px;
 }
 
+.tooltip {
+	position: relative;
+}
+
+.tooltip:hover::before {
+	position: absolute;
+	top: -15px;
+	left: 0px;
+	transform: translateX(-15%);
+	content: attr(data-title);
+	background-color: #f9f9f9;
+	padding: 4px;
+	border: 0.5px solid black;
+	border-radius: 5px;
+	font-size: 10px;
+	font-family: 'Montserrat';
+	color: gray;
+	z-index: 5;
+	white-space: nowrap;
+}
+
 button {
 	background-color: rgba(255, 255, 255, 0.5);
 	height: 25px;
