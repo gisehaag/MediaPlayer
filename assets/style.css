@@ -12,7 +12,13 @@ body {
 .text {
 	color: #f0f0f0;
 	text-align: center;
+	font-size: 14px;
+	margin: 0;
 	margin-bottom: 10px;
+}
+
+.text.title {
+	font-size: 1.2em;
 }
 
 .box {
@@ -172,9 +178,12 @@ body {
 }
 
 @media screen and (max-width: 768px) {
-	.box,
-	.text-box {
+	.box {
 		width: 100vw;
+	}
+
+	.text-box {
+		width: 90vw;
 		font-size: 0.75em;
 	}
 
@@ -194,6 +203,15 @@ body {
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	.player button {
+		height: 20px;
+		width: 20px;
+	}
+
+	.player i {
+		font-size: 0.8em;
 	}
 
 	.volume-wrapper:hover .controls__volume-bar {
