@@ -181,7 +181,7 @@ class MediaPlayer {
 let player = new MediaPlayer({
 	target: '#video-1',
 	volume: 20,
-	progressGap: 1,
+	progressGap: 10,
 });
 
 
